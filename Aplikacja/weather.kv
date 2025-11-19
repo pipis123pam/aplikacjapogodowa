@@ -1,0 +1,237 @@
+#:kivy 2.3.0
+
+<WeatherRoot>:
+    orientation: "vertical"
+    spacing: dp(6)
+    padding: dp(8)
+
+    MDTopAppBar:
+        title: "Prognoza tygodniowa"
+        elevation: 6
+        md_bg_color: 0.35, 0.05, 0.05, 1
+        right_action_items: [["refresh", lambda x: app.reload_app()]]
+
+    ScrollView:
+        do_scroll_x: False
+
+        MDBoxLayout:
+            id: main_box
+            orientation: "vertical"
+            padding: dp(12)
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: dp(12)
+
+            BoxLayout:
+                id: welcome_box
+                size_hint_y: None
+                height: dp(300)
+                orientation: "vertical"
+                padding: dp(12)
+                spacing: dp(12)
+                opacity: 0
+
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    RoundedRectangle:
+                        source: '/home/admin/Desktop/New Folder/plaza.png'
+                        size: self.size
+                        pos: self.pos
+                        radius: [20, 20, 20, 20]
+
+                    Color:
+                        rgba: 0.08, 0.02, 0.02, 0.85
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [20, 20, 20, 20]
+
+                MDLabel:
+                    text: "Witaj w aplikacji pogodowej. Ponizej wpisz miejscowosc by dowiedziec sie o przyszlej prognozie."
+                    halign: "center"
+                    role: "large"
+                    theme_text_color: "Custom"
+                    text_color: 0.98, 0.9, 0.9, 1
+                    size_hint_y: None
+                    height: dp(56)
+
+                MDLabel:
+                    text: "Aplikacja w wersji DEMO."
+                    halign: "center"
+                    theme_text_color: "Custom"
+                    text_color: 0.9, 0.85, 0.85, 1
+                    size_hint_y: None
+                    height: dp(40)
+
+                
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(56)
+                    padding: dp(40), 0
+                    spacing: dp(8)
+
+                    MDTextField:
+                        id: search_field
+                        hint_text: "Wyszukaj miejscowość..."
+                        mode: "filled"
+                        on_text_validate: app.on_search(self.text)
+                        pos_hint: {"center_x": .5}
+                        size_hint_x: 0.65 
+                        halign: "center"
+                        text_color: 1, 1, 1, 1
+                        cursor_color: 1, 1, 1, 1
+                        
+                    
+                    MDButton:
+                        id: wojewodztwo_btn
+                        style: "filled"
+                        size_hint_x: 0.35
+                        on_release: app.open_wojewodztwa_menu(self)
+
+                        MDButtonText:
+                            text: app.selected_wojewodztwo
+
+                
+                MDButton:
+                    style: "text"
+                    pos_hint: {"right": 0.97}
+                    size_hint: None, None
+                    height: dp(36)
+
+                    MDIcon:
+                        icon: "map-marker-outline"
+
+                    MDButtonText:
+                        text: "Mapa drogowa"
+
+            ScrollView:
+                size_hint_y: None
+                height: dp(300)
+                do_scroll_x: True
+                do_scroll_y: False
+
+                MDBoxLayout:
+                    id: content_container
+                    orientation: "horizontal"
+                    size_hint_x: None
+                    width: self.minimum_width
+                    spacing: dp(12)
+                    padding: dp(6)
+
+
+<DayCard>:
+    elevation: 6
+    radius: [16]
+    size_hint_x: None
+    width: dp(300)
+    height: dp(260)
+    padding: dp(10)
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(10)
+        spacing: dp(6)
+
+        
+        BoxLayout:
+            size_hint_y: None
+            height: dp(44)
+            spacing: dp(8)
+
+            MDLabel:
+                text: root.day_label + "  •  " + root.date_label
+                role: "small"
+                halign: "left"
+                size_hint_x: 1 
+                theme_text_color: "Custom"
+                text_color: 0.98, 0.9, 0.9, 1
+
+        
+        BoxLayout:
+            size_hint_y: None
+            height: dp(44)
+            spacing: dp(8)
+            padding: 0, dp(5)
+
+            MDLabel:
+                text: f"Godzina: {int(root.selected_hour):02d}:00"
+                role: "small"
+                halign: "left"
+                size_hint_x: 0.4
+                theme_text_color: "Custom"
+                text_color: 0.98, 0.9, 0.9, 1
+
+            MDSlider:
+                id: hour_slider
+                min: 1
+                max: 24
+                value: root.selected_hour
+                step: 1
+                size_hint_x: 0.6
+                on_value: root.selected_hour = int(self.value)
+
+
+        BoxLayout:
+            orientation: "vertical"
+            spacing: dp(6)
+
+            BoxLayout:
+                spacing: dp(6)
+                MDIcon:
+                    icon: "clock-outline"
+                    size_hint_x: None
+                    width: dp(26)
+                    theme_text_color: "Custom"
+                    text_color: 0.98, 0.9, 0.9, 1
+                MDLabel:
+                    id: hour_val
+                    text: "Godzina: --"
+                    halign: "left"
+                    theme_text_color: "Custom"
+                    text_color: 0.95, 0.9, 0.9, 1
+
+            BoxLayout:
+                spacing: dp(6)
+                MDIcon:
+                    icon: "thermometer"
+                    size_hint_x: None
+                    width: dp(26)
+                    theme_text_color: "Custom"
+                    text_color: 0.98, 0.9, 0.9, 1
+                MDLabel:
+                    id: temp_val
+                    text: "Temperatura: -- °C"
+                    halign: "left"
+                    theme_text_color: "Custom"
+                    text_color: 0.95, 0.9, 0.9, 1
+
+            BoxLayout:
+                spacing: dp(6)
+                MDIcon:
+                    icon: "compass"
+                    size_hint_x: None
+                    width: dp(26)
+                    theme_text_color: "Custom"
+                    text_color: 0.98, 0.9, 0.9, 1
+                MDLabel:
+                    id: press_val
+                    text: "Wiatr: -- km/h"
+                    halign: "left"
+                    theme_text_color: "Custom"
+                    text_color: 0.95, 0.9, 0.9, 1
+
+            BoxLayout:
+                spacing: dp(6)
+                MDIcon:
+                    icon: "water-outline"
+                    size_hint_x: None
+                    width: dp(26)
+                    theme_text_color: "Custom"
+                    text_color: 0.98, 0.9, 0.9, 1
+                MDLabel:
+                    id: prec_val
+                    text: "Opady: -- mm"
+                    halign: "left"
+                    theme_text_color: "Custom"
+                    text_color: 0.95, 0.9, 0.9, 1
